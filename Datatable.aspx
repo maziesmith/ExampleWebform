@@ -10,16 +10,28 @@
     <link href="Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
 </head>
 <body>
-    <form id="form1" runat="server">
-    <asp:Button ID="Button2" runat="server" Text="Default" PostBackUrl="~/Default.aspx"/>
-    <asp:Button ID="Button1" runat="server" Text="Registration" PostBackUrl="~/RegistrationForm.aspx"/>
-    
+    <div class="container">
 
-    <div style="width: 90%; margin: auto"> 
-        <table id="myDatatable">
-        </table>
+        <form id="e" runat="server">
+            <asp:Button class="btn" ID="Button1" runat="server" Text="Registration" PostBackUrl="~/RegistrationForm.aspx"/>
+            <asp:Button class="btn" ID="Button2" runat="server" Text="Default" PostBackUrl="~/Default.aspx"/>
+        </form>
+
+        <div style="margin: 30px auto"> 
+            <table id="myDatatable">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Tên giúp đỡ</td>
+                        <td>Đường dẫn</td>
+                        <td>Thao tác</td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
     </div>
-    </form>
 
     <script src="Scripts/jquery-3.3.1.min.js"></script>
     <script src="Scripts/jquery.validate.min.js"></script>
@@ -34,20 +46,20 @@
             GetTableResult();
         })
 
+
+
         function GetTableResult() {
-            var oldStart = 0;
             //Bind table to DataTable
             tableDaChuyen = $("#myDatatable").dataTable({
-                "sDom": "<<'inline-left'C><'inline-left'l><'inline-left'r><'inline-right'f>><t><ip>",
-                "oColVis": { "buttonText": "<i class='fa fa-cog'></i>" },
                 "bProcessing": true,
                 "bStateSave": true,
                 "bServerSide": true,
                 "bSearchHighLight": true,
+                "bFilter": true,
                 "oLanguage": { "sProcessing": "Đang tìm kiếm..." },
                 "sAjaxSource": "/Handler.ashx",
                 "aoColumnDefs": [
-                    { "sTitle": "#", "mData": "stt", "aTargets": [0] },
+                    { "mData": "stt", "aTargets": [0] },
                     { "sTitle": "Tên giúp đỡ", "mData": "tengiupdo", "aTargets": [1] },
                     { "sTitle": "Đường dẫn", "mData": "duongdan", "aTargets": [2] },
                     { "sTitle": "Thao tác", "mData": "thaotac", "aTargets": [3] },

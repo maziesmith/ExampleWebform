@@ -4,7 +4,7 @@ Imports Oracle.ManagedDataAccess.Types
 Partial Class _Default
     Inherits System.Web.UI.Page
     'Dim path = ConfigurationManager.ConnectionStrings("pathOrclQuantri").ConnectionString
-    Dim path = "Data Source=VPDT;Persist Security Info=True;User ID=vpdt_laocai_ubndsapaqd28;Password=vnpt#K74"
+    Dim path As String = "Data Source=VPDT;Persist Security Info=True;User ID=vpdt_laocai_ubndsapaqd28;Password=vnpt#K74"
     Dim conn As New OracleConnection(path)
 
     Dim parm As New OracleParameter

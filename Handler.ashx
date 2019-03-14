@@ -34,13 +34,32 @@ Public Class Handler : Implements IHttpHandler
     
     
     Private Function LoadGiupDo(context As HttpContext) As Object
-        Dim myForm As New clsForm
-        Dim dts As DataTable = myForm.DanhSachGiupDo
         
-        
-        Dim start As Integer = 0
+        Dim strFilter As String = context.Request("sSearch")
         Dim lstResult As New List(Of Object)
+        Dim length As Integer = Integer.Parse(context.Request("iDisplayLength"))
+        Dim start As Integer = Integer.Parse(context.Request("idisplaystart"))
+        Dim sortColumn As String
+        Dim sortDirection As String
+        Dim count As Integer
         
+        
+        If (start <> 0) Then
+            start = start - 1
+        End If
+
+        Try
+            sortColumn = context.Request("mDataProp_" & Integer.Parse(context.Request("iSortCol_0")))
+            sortDirection = context.Request("sSortDir_0")
+        Catch ex As Exception
+            sortColumn = 0
+            sortDirection = " DESC"
+        End Try
+        
+        
+        'Load database by class
+        Dim myForm As New clsForm
+        Dim dts As DataTable = myForm.DanhSachGiupDo(start, start + length)
         
         'Create Object 
         For i As Integer = 0 To dts.Rows.Count - 1
