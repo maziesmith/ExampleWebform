@@ -62,7 +62,26 @@ Public Class clsForm
 
         Return rowcount
     End Function
+    Sub DeleteArrayGiupDo(dataArray As String)
+        'ket noi oracle
+        Dim path As New clsConnect
+        Dim myConn As New OracleConnection(path.pathOrclQuantri())
 
+        Dim strQuery As String = "DELETE FROM vanban_dm_giup_do  WHERE STT IN (" & dataArray & ") "
+
+
+        'command
+        Dim cmd As New OracleCommand
+        cmd.Connection = myConn
+        cmd.CommandText = strQuery
+        cmd.CommandType = CommandType.Text
+
+        cmd.Connection.Open()
+        cmd.ExecuteNonQuery()
+        cmd.Connection.Close()
+        myConn.Close()
+
+    End Sub
     Sub DeleteRowGiupDo(dataId As Integer)
         'ket noi oracle
         Dim path As New clsConnect

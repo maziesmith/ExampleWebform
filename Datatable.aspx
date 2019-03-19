@@ -32,6 +32,10 @@
         <h3>Bạn có chắc là muốn xóa trường này?</h3>
     </div>
 
+    <%--Box Confirm 2--%>
+    <div id="deleteConfirm2" title="Xóa trường">
+        <h3>Bạn có chắc là muốn xóa Những trường này?</h3>
+    </div>
 
      <%--Box Update--%>
     <div id="updateBox" title="Cập nhật">
@@ -80,7 +84,7 @@
             GetTableResult();
             popupRun();
 
-
+            /* Delete & check all */
             $('#CheckallXemden').click(function (event) {
                 if (this.checked) {
                     $("input[name='cidxemden[]").each(function () {
@@ -94,16 +98,11 @@
                 }
             })
 
-
-            var arrayDelId = [];
             $('.deleteall').click(function () {
-                $("input[name='cidxemden[]").each(function () {
-                    if (this.checked) {
-                        val = $(this).val()
-                        
-                    }
-                });
+                $("#deleteConfirm2")
+                    .dialog('open');
             })
+
         })
 
         function popupRun() {
@@ -148,6 +147,24 @@
                 }
             });
 
+            $("#deleteConfirm2").dialog({
+                autoOpen: false,
+                modal: true,
+                resizable: false,
+                height: "auto",
+                width: 500,
+                buttons: {
+                    "Hủy": function () {
+                        $(this).dialog("close");
+                    },
+                    "Chính xác": function () {
+                        deleteAllClick();
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+
 
             //Update
             updateClickPre();
@@ -167,7 +184,6 @@
                 }
             });
         }
-
 
         function GetTableResult() {
             //Bind table to DataTable
@@ -234,6 +250,39 @@
                     .data('dataId', dataId)
                     .dialog('open');
             })
+        }
+
+        function deleteAllClick() {
+            var arrayDelId = [];
+
+            $("input[name='cidxemden[]").each(function () {
+                if (this.checked) {
+                    val = $(this).val();
+                    arrayDelId.push(parseInt(val));
+                }
+            });
+
+            arrayDelId = JSON.stringify(arrayDelId);
+            arrayDelId = arrayDelId.replace(/[\])}[{(]/g, '');
+            console.log(arrayDelId)
+
+            /* Send to Handler */
+            $.ajax({
+                type: "POST",
+                url: "/CommonHandler.ashx",
+                data: { typepost: "deletearray", dataArray: arrayDelId },
+                dataType: 'json',
+                success: function OnSuccess(response) {
+                    if (response.status == "200") {
+                        RefreshTable('#myDatatable');
+                    } else {
+                        console.log(response.message);
+                    }
+                },
+                failure: function (response) {
+                    console.log(JSON.stringify(error.statusText));
+                }
+            });
         }
 
         function deleteClick(dataId) {
