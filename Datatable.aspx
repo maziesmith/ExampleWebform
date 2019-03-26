@@ -1,15 +1,36 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="Datatable.aspx.vb" Inherits="Datatable" %>
+﻿<%@ Page MasterPageFile="~/MasterPage.master" Language="VB" AutoEventWireup="false" CodeFile="Datatable.aspx.vb" Inherits="Datatable" %>
 
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" />
+<asp:content id="Content2" ContentPlaceHolderID="head" runat="server">
     <link href="Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
-</head>
-<body>
+
+    <style>
+        table.dataTable tbody th, table.dataTable tbody td {
+            padding: 8px 10px;
+            vertical-align: baseline;
+        }
+        #myDatatable_length label,
+        #myDatatable_filter label{
+            display: grid;
+            align-items: center;
+            grid-template-columns: auto auto auto;
+            grid-gap: 10px;
+            margin-bottom: 20px
+        }
+        #myDatatable_paginate .btn{
+            margin: 0 2px;
+        }
+        table.dataTable.no-footer{
+            border-bottom: 0;
+            margin-bottom: 15px;
+        }
+        table.dataTable thead th, table.dataTable thead td{
+            border: none;
+        }
+    </style>
+</asp:content>
+
+
+<asp:content id="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <%--Box Thêm Mới--%>
     <div id="addNew" title="Thêm Mới">
@@ -54,313 +75,331 @@
     </div>
 
     <%--Table--%>
-    <div class="container">
-        <div style="margin: 50px auto"> 
-            <form id="e" runat="server">
-                <asp:Button class="btn" ID="Button1" runat="server" Text="Registration" PostBackUrl="~/RegistrationForm.aspx"/>
-                <asp:Button class="btn" ID="Button2" runat="server" Text="Default" PostBackUrl="~/Default.aspx"/>
+    <div class="">
+        <div style="margin:  0 auto 40px"> 
+            <table id="myDatatable" >
+            </table>
+            
+            <div class="clearfix" style="margin-top: 50px">
                 <a id="OpenaddNew" class="btn btn-primary addnew" style="float: right; margin-left: 15px; margin-bottom: 20px; display: block">Thêm mới</a>
                 <a class="btn btn-danger deleteall" style="float: right; margin-left: auto; margin-bottom: 15px; display: block">Xóa mục đã chọn</a>
-            </form>
-
-            <table id="myDatatable">
-
-                <tbody></tbody>
-            </table>
+            </div>
         </div>
-
     </div>
-
-    <script src="Scripts/jquery-3.3.1.min.js"></script>
-    <script src="Scripts/jquery.validate.min.js"></script>
-    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="Scripts/jquery-ui-1.12.1.min.js"></script>
-
-    <script>
-        var tableId = "myDatatable";
-        var keySearchDetail = window.location.hostname + '_' + tableId + '_DetailDatabase';
-
-        $(document).ready(function () {
-            GetTableResult();
-            popupRun();
-
-            /* Delete & check all */
-            $('#CheckallXemden').click(function (event) {
-                if (this.checked) {
-                    $("input[name='cidxemden[]").each(function () {
-                        this.checked = true;
-                    });
-                }
-                else {
-                    $("input[name='cidxemden[]").each(function () {
-                        this.checked = false;
-                    });
-                }
-            })
-
-            $('.deleteall').click(function () {
-                $("#deleteConfirm2")
-                    .dialog('open');
-            })
-
-        })
-
-        function popupRun() {
-            //Add New
-            $("#addNew").dialog({
-                autoOpen: false,
-                modal: true,
-                resizable: false,
-                height: "auto",
-                width: 500,
-                buttons: {
-                    "Hủy": function () {
-                        $(this).dialog("close");
-                    },
-                    "Thêm": function () {
-                        addNewClick();
-                    }
-                }
-            });
-
-            $("#OpenaddNew").click(function () {
-                $("#addNew").dialog('open');
-            });
+  
+</asp:content>
 
 
-            //Delete
-            deleteClickPre();
-            $("#deleteConfirm").dialog({
-                autoOpen: false,
-                modal: true,
-                resizable: false,
-                height: "auto",
-                width: 500,
-                buttons: {
-                    "Hủy": function () {
-                        $(this).dialog("close");
-                    },
-                    "Chính xác": function () {
-                        dataId = $(this).data('dataId')
-                        deleteClick(dataId)
-                    }
-                }
-            });
+<asp:content id="Content3" ContentPlaceHolderID="bottom" runat="server">
+      <script>
+          var tableId = "myDatatable";
+          var keySearchDetail = window.location.hostname + '_' + tableId + '_DetailDatabase';
 
-            $("#deleteConfirm2").dialog({
-                autoOpen: false,
-                modal: true,
-                resizable: false,
-                height: "auto",
-                width: 500,
-                buttons: {
-                    "Hủy": function () {
-                        $(this).dialog("close");
-                    },
-                    "Chính xác": function () {
-                        deleteAllClick();
-                        $(this).dialog("close");
-                    }
-                }
-            });
+          $(document).ready(function () {
+              GetTableResult();
+              popupRun();
 
+              /* Delete & check all */
+              $('#CheckallXemden').click(function (event) {
+                  if (this.checked) {
+                      $("input[name='cidxemden[]").each(function () {
+                          this.checked = true;
+                      });
+                  }
+                  else {
+                      $("input[name='cidxemden[]").each(function () {
+                          this.checked = false;
+                      });
+                  }
+              })
 
+              $('.deleteall').click(function () {
+                  $("#deleteConfirm2")
+                      .dialog('open');
+              })
 
-            //Update
-            updateClickPre();
-            $("#updateBox").dialog({
-                autoOpen: false,
-                modal: true,
-                resizable: false,
-                height: "auto",
-                width: 500,
-                buttons: {
-                    "Hủy": function () {
-                        $(this).dialog("close");
-                    },
-                    "Câp nhật": function () {
-                        updateClick();
-                    }
-                }
-            });
-        }
+          })
 
-        function GetTableResult() {
-            //Bind table to DataTable
-            tableDaChuyen = $("#myDatatable").dataTable({
-                "bProcessing": true,
-                "bStateSave": true,
-                "bServerSide": true,
-                "bSearchHighLight": true,
-                "bFilter": true,
-                "oLanguage": { "sProcessing": "Đang tìm kiếm..." },
-                "sAjaxSource": "/Handler.ashx",
-                "aoColumnDefs": [
-                    { "sTitle": "#", "mData": "stt", "aTargets": [0], "bSortable": false },
-                    { "sTitle": "Tên giúp đỡ", "mData": "tengiupdo", "aTargets": [1] },
-                    { "sTitle": "Đường dẫn", "mData": "duongdan", "aTargets": [2] },
-                    { "sTitle": "Thao tác", "mData": "thaotac", "aTargets": [3], "bSortable": false },
-                    { "sTitle": "<input type='checkbox' id='CheckallXemden' />", "mData": "chon", "aTargets": [4], "bSortable": false },
-                ],
-            });
-        }
+          function popupRun() {
+              //Add New
+              $("#addNew").dialog({
+                  autoOpen: false,
+                  modal: true,
+                  resizable: false,
+                  height: "auto",
+                  width: 500,
+                  buttons: {
+                      "Hủy": function () {
+                          $(this).dialog("close");
+                      },
+                      "Thêm": function () {
+                          addNewClick();
+                      }
+                  }
+              });
 
-        function RefreshTable(tableId) {
-            $(tableId)
-                .DataTable().ajax.reload(null, false);
-        }
-
-        function deleteClickPre() {
-            $('#myDatatable tbody').on('click', '.delete', function (event) {
-                var listClass = this.classList;
-                var dataId = this.id;
-                var that = this;
-
-                $("#deleteConfirm")
-                    .data('dataId', dataId)
-                    .dialog('open');
-            })
-        }
-
-        function updateClickPre() {
-            $('#myDatatable tbody').on('click', '.update', function (event) {
-                var dataId = this.id;
-
-                $.ajax({
-                    type: "POST",
-                    url: "/CommonHandler.ashx",
-                    data: { typepost: "updateShow", dataId: dataId},
-                    dataType: 'json',
-                    success: function OnSuccess(response) {
-                        if (response.status == "200") {
-                            $('#ustt').val(response.result.stt);
-                            $('#utengiupdo').val(response.result.tengiupdo);
-                            $('#uduongdan').val(response.result.duongdan);
-                        } else {
-                            console.log(response.message);
-                        }
-                    },
-                    failure: function (response) {
-                        console.log(JSON.stringify(error.statusText));
-                    }
-                });
+              $("#OpenaddNew").click(function () {
+                  $("#addNew").dialog('open');
+              });
 
 
-                $("#updateBox")
-                    .data('dataId', dataId)
-                    .dialog('open');
-            })
-        }
+              //Delete
+              deleteClickPre();
+              $("#deleteConfirm").dialog({
+                  autoOpen: false,
+                  modal: true,
+                  resizable: false,
+                  height: "auto",
+                  width: 500,
+                  buttons: {
+                      "Hủy": function () {
+                          $(this).dialog("close");
+                      },
+                      "Chính xác": function () {
+                          dataId = $(this).data('dataId')
+                          deleteClick(dataId)
+                      }
+                  }
+              });
 
-        function deleteAllClick() {
-            var arrayDelId = [];
-
-            $("input[name='cidxemden[]").each(function () {
-                if (this.checked) {
-                    val = $(this).val();
-                    arrayDelId.push(parseInt(val));
-                }
-            });
-
-            arrayDelId = JSON.stringify(arrayDelId);
-            arrayDelId = arrayDelId.replace(/[\])}[{(]/g, '');
-            console.log(arrayDelId)
-
-            /* Send to Handler */
-            $.ajax({
-                type: "POST",
-                url: "/CommonHandler.ashx",
-                data: { typepost: "deletearray", dataArray: arrayDelId },
-                dataType: 'json',
-                success: function OnSuccess(response) {
-                    if (response.status == "200") {
-                        RefreshTable('#myDatatable');
-                    } else {
-                        console.log(response.message);
-                    }
-                },
-                failure: function (response) {
-                    console.log(JSON.stringify(error.statusText));
-                }
-            });
-        }
-
-        function deleteClick(dataId) {
-            $.ajax({
-                type: "POST",
-                url: "/CommonHandler.ashx",
-                data: { typepost: "deleterow", dataId: dataId },
-                dataType: 'json',
-                success: function OnSuccess(response) {
-                    if (response.status == "200") {
-                        RefreshTable('#myDatatable');
-                        $("#deleteConfirm").dialog("close");
-                    }
-                    else {
-                        console.log(response.message);
-                    }
-                },
-                failure: function (response) {
-                    console.log(JSON.stringify(error.statusText));
-                }
-            });
-        }
-
-        function updateClick() {
-            var stt = $('#ustt').val();
-            var tengiupdo = $('#utengiupdo').val();
-            var duongdan = $('#uduongdan').val();
+              $("#deleteConfirm2").dialog({
+                  autoOpen: false,
+                  modal: true,
+                  resizable: false,
+                  height: "auto",
+                  width: 500,
+                  buttons: {
+                      "Hủy": function () {
+                          $(this).dialog("close");
+                      },
+                      "Chính xác": function () {
+                          deleteAllClick();
+                          $(this).dialog("close");
+                      }
+                  }
+              });
 
 
-            $.ajax({
-                type: "POST",
-                url: "/CommonHandler.ashx",
-                data: { typepost: "update", stt: stt, tengiupdo: tengiupdo, duongdan: duongdan },
-                dataType: 'json',
-                success: function OnSuccess(response) {
-                    if (response.status == "200") {
-                        RefreshTable('#myDatatable');
-                        $("#updateBox").dialog("close");
-                    }
-                    else {
-                        console.log(response.message);
-                    }
-                },
-                failure: function (response) {
-                    console.log(JSON.stringify(error.statusText));
-                }
-            });
-        }
 
-        function addNewClick() {
-            var listClass = this.classList;
-            var dataId = this.id;
-            var that = this;
-            var stt = $('#stt').val();
-            var tengiupdo = $('#tengiupdo').val();
-            var duongdan = $('#duongdan').val();
-                
+              //Update
+              updateClickPre();
+              $("#updateBox").dialog({
+                  autoOpen: false,
+                  modal: true,
+                  resizable: false,
+                  height: "auto",
+                  width: 500,
+                  buttons: {
+                      "Hủy": function () {
+                          $(this).dialog("close");
+                      },
+                      "Câp nhật": function () {
+                          updateClick();
+                      }
+                  }
+              });
+          }
 
-            $.ajax({
-                type: "POST",
-                url: "/CommonHandler.ashx",
-                data: { typepost: "addnew", stt: stt, tengiupdo: tengiupdo, duongdan: duongdan },
-                dataType: 'json',
-                success: function OnSuccess(response) {
-                    if (response.status == "200") {
-                        RefreshTable('#myDatatable');
-                        $("#addNew").dialog("close");
-                    }
-                    else {
-                        console.log(response.message);
-                    }
-                },
-                failure: function (response) {
-                    console.log(JSON.stringify(error.statusText));
-                }
-            });
-        }
+          function GetTableResult() {
+              //Bind table to DataTable
+              tableDaChuyen = $("#myDatatable").dataTable({
+                  "sDom": "<'head'<'inline-left'l><'inline-left'r><'inline-right'f>><t><ip>",
+                  "bProcessing": true,
+                  "bStateSave": true,
+                  "bServerSide": true,
+                  "bSearchHighLight": true,
+                  "bFilter": true,
+                  "oLanguage": { "sProcessing": "Đang tìm kiếm..." },
+                  "sAjaxSource": "/Handler.ashx",
+                  "aoColumnDefs": [
+                      { "sTitle": "#", "mData": "stt", "aTargets": [0], "bSortable": false },
+                      { "sTitle": "Tên giúp đỡ", "mData": "tengiupdo", "aTargets": [1] },
+                      { "sTitle": "Đường dẫn", "mData": "duongdan", "aTargets": [2] },
+                      { "sTitle": "Thao tác", "mData": "thaotac", "aTargets": [3], "bSortable": false },
+                      { "sTitle": "<input type='checkbox' id='CheckallXemden' />", "mData": "chon", "aTargets": [4], "bSortable": false },
+                  ],
+                  "fnInitComplete": CompleteInitDatatable,
+                  "fnDrawCallback": DrawCallBackDatatable,
+              });
+          }
+
+          function CompleteInitDatatable() {
+              //Head
+              $('#myDatatable_wrapper .head select').addClass('form-control');
+              $('#myDatatable_wrapper .head input').addClass('form-control');
+
+              //Body
+              $('#myDatatable').addClass('table table-striped table-hover ');
+
+
+          }
+
+          function DrawCallBackDatatable() {
+              console.log('oke')
+              //Footer
+              $('#myDatatable_wrapper .paginate_button.current').addClass('disabled');
+              $('#myDatatable_wrapper .paginate_button ').addClass('btn btn-primary btn-xs');
+              $('#myDatatable_wrapper .paginate_button ').removeClass('paginate_button');
+
+              $('#myDatatable_wrapper thead tr').addClass("info");
+          }
+
+          function RefreshTable(tableId) {
+              $(tableId)
+                  .DataTable().ajax.reload(null, false);
+          }
+
+          function deleteClickPre() {
+              $('#myDatatable tbody').on('click', '.delete', function (event) {
+                  var listClass = this.classList;
+                  var dataId = this.id;
+                  var that = this;
+
+                  $("#deleteConfirm")
+                      .data('dataId', dataId)
+                      .dialog('open');
+              })
+          }
+
+          function updateClickPre() {
+              $('#myDatatable tbody').on('click', '.update', function (event) {
+                  var dataId = this.id;
+
+                  $.ajax({
+                      type: "POST",
+                      url: "/CommonHandler.ashx",
+                      data: { typepost: "updateShow", dataId: dataId },
+                      dataType: 'json',
+                      success: function OnSuccess(response) {
+                          if (response.status == "200") {
+                              $('#ustt').val(response.result.stt);
+                              $('#utengiupdo').val(response.result.tengiupdo);
+                              $('#uduongdan').val(response.result.duongdan);
+                          } else {
+                              console.log(response.message);
+                          }
+                      },
+                      failure: function (response) {
+                          console.log(JSON.stringify(error.statusText));
+                      }
+                  });
+
+
+                  $("#updateBox")
+                      .data('dataId', dataId)
+                      .dialog('open');
+              })
+          }
+
+          function deleteAllClick() {
+              var arrayDelId = [];
+
+              $("input[name='cidxemden[]").each(function () {
+                  if (this.checked) {
+                      val = $(this).val();
+                      arrayDelId.push(parseInt(val));
+                  }
+              });
+
+              arrayDelId = JSON.stringify(arrayDelId);
+              arrayDelId = arrayDelId.replace(/[\])}[{(]/g, '');
+              console.log(arrayDelId)
+
+              /* Send to Handler */
+              $.ajax({
+                  type: "POST",
+                  url: "/CommonHandler.ashx",
+                  data: { typepost: "deletearray", dataArray: arrayDelId },
+                  dataType: 'json',
+                  success: function OnSuccess(response) {
+                      if (response.status == "200") {
+                          RefreshTable('#myDatatable');
+                      } else {
+                          console.log(response.message);
+                      }
+                  },
+                  failure: function (response) {
+                      console.log(JSON.stringify(error.statusText));
+                  }
+              });
+          }
+
+          function deleteClick(dataId) {
+              $.ajax({
+                  type: "POST",
+                  url: "/CommonHandler.ashx",
+                  data: { typepost: "deleterow", dataId: dataId },
+                  dataType: 'json',
+                  success: function OnSuccess(response) {
+                      if (response.status == "200") {
+                          RefreshTable('#myDatatable');
+                          $("#deleteConfirm").dialog("close");
+                      }
+                      else {
+                          console.log(response.message);
+                      }
+                  },
+                  failure: function (response) {
+                      console.log(JSON.stringify(error.statusText));
+                  }
+              });
+          }
+
+          function updateClick() {
+              var stt = $('#ustt').val();
+              var tengiupdo = $('#utengiupdo').val();
+              var duongdan = $('#uduongdan').val();
+
+
+              $.ajax({
+                  type: "POST",
+                  url: "/CommonHandler.ashx",
+                  data: { typepost: "update", stt: stt, tengiupdo: tengiupdo, duongdan: duongdan },
+                  dataType: 'json',
+                  success: function OnSuccess(response) {
+                      if (response.status == "200") {
+                          RefreshTable('#myDatatable');
+                          $("#updateBox").dialog("close");
+                      }
+                      else {
+                          console.log(response.message);
+                      }
+                  },
+                  failure: function (response) {
+                      console.log(JSON.stringify(error.statusText));
+                  }
+              });
+          }
+
+          function addNewClick() {
+              var listClass = this.classList;
+              var dataId = this.id;
+              var that = this;
+              var stt = $('#stt').val();
+              var tengiupdo = $('#tengiupdo').val();
+              var duongdan = $('#duongdan').val();
+
+
+              $.ajax({
+                  type: "POST",
+                  url: "/CommonHandler.ashx",
+                  data: { typepost: "addnew", stt: stt, tengiupdo: tengiupdo, duongdan: duongdan },
+                  dataType: 'json',
+                  success: function OnSuccess(response) {
+                      if (response.status == "200") {
+                          RefreshTable('#myDatatable');
+                          $("#addNew").dialog("close");
+                      }
+                      else {
+                          console.log(response.message);
+                      }
+                  },
+                  failure: function (response) {
+                      console.log(JSON.stringify(error.statusText));
+                  }
+              });
+          }
 
     </script>
-</body>
-</html>
+
+</asp:content>

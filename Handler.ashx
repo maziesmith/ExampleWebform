@@ -8,17 +8,6 @@ Imports System.Data
 Public Class Handler : Implements IHttpHandler
     
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
-        'Switch Case
-        'Dim type As String = context.Request("tabletype")
-        'Dim result As Object = Nothing
-        'Select Case type
-        '    Case "loadgiupdo"
-        '        result = LoadGiupDo(context)
-        'End Select
-        
-        
-        
-        'Return json
         Dim result As Object = Nothing
         result = LoadGiupDo(context)
         Dim serializer As New JavaScriptSerializer
@@ -73,7 +62,7 @@ Public Class Handler : Implements IHttpHandler
             
             maxoa = dataRow.Item("STT")
             chon = "<input type='checkbox' class='minimal' name='cidxemden[]' value='" & maxoa & "'/>"
-            thaotac = "<button class='btn btn-danger btn-sm delete' id='" & maxoa & "'>Xóa</button><button style='margin-left: 10px' class='btn btn-default btn-sm update' id='" & maxoa & "'>Sửa</button>"
+            thaotac = "<button class='btn btn-danger btn-sm delete' id='" & maxoa & "'>Xóa</button><button style='margin-left: 10px' class='btn btn-warning btn-sm update' id='" & maxoa & "'>Sửa</button>"
             
             If Not IsDBNull(dataRow.Item("TEN_GIUP_DO")) Then
                 tengiupdo = dataRow.Item("TEN_GIUP_DO")

@@ -3,6 +3,7 @@
 Imports System
 Imports System.Web
 Imports System.Web.Script.Serialization
+Imports System.Data
 
 Public Class CommonHandler : Implements IHttpHandler
     Public Shared myVanBan As New clsForm
@@ -10,6 +11,16 @@ Public Class CommonHandler : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         Dim typepost As String = context.Request("typepost")
         Select Case typepost
+            Case "arrayShowByMon"
+                Dim result As Object = arrayShowByMon(context)
+                Dim serializer As New JavaScriptSerializer
+                context.Response.ContentType = "application/json"
+                context.Response.Write(serializer.Serialize(result))
+            Case "arrayShow"
+                Dim result As Object = arrayShow(context)
+                Dim serializer As New JavaScriptSerializer
+                context.Response.ContentType = "application/json"
+                context.Response.Write(serializer.Serialize(result))
             Case "deletearray"
                 Dim result As Object = deleteArray(context)
                 Dim serializer As New JavaScriptSerializer
@@ -124,4 +135,52 @@ Public Class CommonHandler : Implements IHttpHandler
 
     End Function
 
+    Private Function arrayShow(ByVal context As HttpContext) As Object
+        
+        Dim dts = myVanBan.getTenFirstField()
+        Dim lstResult As New List(Of Object)
+        Dim count As String = dts.Rows.Count
+        
+        For i As Integer = 0 To dts.Rows.Count - 1
+            Dim dataRow As DataRow = dts.Rows(i)
+            Dim tengiupdo As String = ""
+            Dim duongdan As String = ""
+            Dim stt As String = ""
+            
+            
+            If Not IsDBNull(dataRow.Item("TEN_GIUP_DO")) Then
+                tengiupdo = dataRow.Item("TEN_GIUP_DO")
+            End If
+            duongdan = If(IsDBNull(dataRow.Item("DUONG_DAN")), "", dataRow.Item("DUONG_DAN"))
+            stt = If(IsDBNull(dataRow.Item("STT")), "", dataRow.Item("STT"))
+            
+            lstResult.Add(New With {.tengiupdo = tengiupdo, .duongdan = duongdan, .stt = stt, .count = count})
+        Next
+        
+        Return New With {.aaData = lstResult}
+        
+    End Function
+    
+    
+    Private Function arrayShowByMon(ByVal context As HttpContext) As Object
+        
+        Dim dts = myVanBan.getDBByMon()
+        Dim lstResult As New List(Of Object)
+        Dim count As String = dts.Rows.Count
+        
+        For i As Integer = 0 To dts.Rows.Count - 1
+            Dim dataRow As DataRow = dts.Rows(i)
+            Dim countt As String = ""
+            Dim month As String = ""
+            
+
+            countt = If(IsDBNull(dataRow.Item("COUNT")), "", dataRow.Item("COUNT"))
+            month = If(IsDBNull(dataRow.Item("MONTH")), "", dataRow.Item("MONTH"))
+            
+            lstResult.Add(New With {.countt = countt, .month = month, .count = count})
+        Next
+        
+        Return New With {.aaData = lstResult}
+        
+    End Function
 End Class

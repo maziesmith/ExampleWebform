@@ -148,6 +148,62 @@ Public Class clsForm
 
     End Function
 
+    Public Function getTenFirstField() As DataTable
+
+        'ket noi oracle
+        Dim path As New clsConnect
+        Dim myConn As New OracleConnection(path.pathOrclQuantri())
+
+        Dim strQuery As String = "SELECT * FROM vanban_dm_giup_do WHERE ROWNUM <= 10"
+
+        'command
+        Dim cmd As New OracleCommand
+        cmd.Connection = myConn
+        cmd.Connection.Open()
+        cmd.CommandText = strQuery
+
+        cmd.CommandType = CommandType.Text
+        Using reader As OracleDataReader = cmd.ExecuteReaderExtension()
+            Dim dataTable As New DataTable
+            dataTable.Load(reader)
+            cmd.Connection.Close()
+            myConn.Close()
+            Return dataTable
+        End Using
+
+    End Function
+
+    Public Function getDBByMon() As DataTable
+
+        'ket noi oracle
+        Dim path As New clsConnect
+        Dim myConn As New OracleConnection(path.pathOrclQuantri())
+
+        Dim strQuery As String = "SELECT COUNT(MA_CONG_VAN) AS COUNT, MONTH" &
+            " FROM( " &
+                " SELECT ma_cong_van, NGAY_LUU," &
+                " EXTRACT( MONTH FROM NGAY_LUU ) MONTH" &
+        " FROM VANBAN_DM_CONG_VAN_SOAN_THAO" &
+            ") GROUP BY MONTH ORDER BY MONTH "
+
+
+        'command
+        Dim cmd As New OracleCommand
+        cmd.Connection = myConn
+        cmd.Connection.Open()
+        cmd.CommandText = strQuery
+
+        cmd.CommandType = CommandType.Text
+        Using reader As OracleDataReader = cmd.ExecuteReaderExtension()
+            Dim dataTable As New DataTable
+            dataTable.Load(reader)
+            cmd.Connection.Close()
+            myConn.Close()
+            Return dataTable
+        End Using
+
+    End Function
+
     Sub UpdateRowGiupDo(stt As Integer, tengiupdo As String, huongdan As String)
         'ket noi oracle
         Dim path As New clsConnect
